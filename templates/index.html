@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal File Converter</title>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="title">Universal File Converter</h1>
+            <nav class="header-nav">
+                <a href="/" class="nav-link active" id="homeLink">Home</a>
+                <a href="/about" class="nav-link" id="aboutLink">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="converter-card">
+                
+                <!-- File Upload Section -->
+                <section class="upload-section">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <div class="upload-icon">📁</div>
+                            <h3>Drag & drop your file here</h3>
+                            <p>or</p>
+                            <button class="choose-btn" onclick="document.getElementById('fileInput').click()">Choose File</button>
+                            <input type="file" id="fileInput" hidden>
+                        </div>
+                    </div>
+                    
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-details">
+                            <span class="file-name" id="fileName"></span>
+                            <span class="file-size" id="fileSize"></span>
+                        </div>
+                        <button class="remove-btn" onclick="removeFile()">×</button>
+                    </div>
+                    
+                    <div class="supported-formats">
+                        <p>Supported formats: TXT, DOCX, HTML, PDF, CSV, XLSX, XML, PNG, JPG, PPT</p>
+                    </div>
+                </section>
+
+                <!-- Output Format Section -->
+                <section class="format-section">
+                    <h3>Choose Output Format</h3>
+                    <div class="format-pills">
+                        <button class="format-pill" data-format="txt">TXT</button>
+                        <button class="format-pill" data-format="docx">DOCX</button>
+                        <button class="format-pill" data-format="html">HTML</button>
+                        <button class="format-pill" data-format="json">JSON</button>
+                        <button class="format-pill" data-format="csv">CSV</button>
+                        <button class="format-pill" data-format="xml">XML</button>
+                        <button class="format-pill" data-format="xlsx">XLSX</button>
+                        <button class="format-pill" data-format="pdf">PDF</button>
+                        <button class="format-pill" data-format="pdfa">PDF/A</button>
+                        <button class="format-pill" data-format="png">PNG</button>
+                        <button class="format-pill" data-format="jpg">JPG</button>
+                        <button class="format-pill" data-format="pptx">PPT</button>
+                    </div>
+                </section>
+
+                <!-- Convert Button -->
+                <button class="convert-btn" id="convertBtn" onclick="convertFile()" disabled>
+                    <span class="btn-text">Convert File</span>
+                    <div class="spinner" id="spinner" style="display: none;"></div>
+                </button>
+
+                <!-- Progress Bar -->
+                <div class="progress-section" id="progressSection" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                        <span class="progress-text" id="progressText">0%</span>
+                    </div>
+                    <p class="status-message" id="statusMessage">Converting...</p>
+                </div>
+
+                <!-- Result Section -->
+                <div class="result-section" id="resultSection" style="display: none;">
+                    <div class="result-content">
+                        <div class="result-icon">✅</div>
+                        <div class="result-info">
+                            <h4>Conversion Complete!</h4>
+                            <p id="resultFileName">converted_file.txt</p>
+                        </div>
+                        <button class="download-btn" id="downloadBtn" onclick="downloadFile()">
+                            Download
+                        </button>
+                    </div>
+                    
+                    <div class="text-preview" id="textPreview" style="display: none;">
+                        <h4>Preview</h4>
+                        <textarea id="previewText" readonly></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <!-- Install Popup -->
+    <div id="installPopup" class="popup">
+        <div class="popup-content">
+            <h2>Install Universal File Converter</h2>
+            <p>You can install this app for free on Desktop or Mobile.</p>
+            <button id="installBtn" class="install-btn">Install App</button>
+            <button onclick="closePopup()" class="close-btn">Close</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

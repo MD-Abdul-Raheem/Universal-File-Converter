@@ -1,0 +1,80 @@
+from flask import Flask, request, jsonify, send_file, render_template
+import os
+import tempfile
+from werkzeug.utils import secure_filename
+from converters import FileConverter
+import uuid
+
+app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max
+
+converter = FileConverter()
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/convert', methods=['POST'])
+def convert_file():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['file']
+        output_format = request.form.get('format', '').lower()
+        
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        if not output_format:
+            return jsonify({'error': 'No output format selected'}), 400
+        
+        # Save uploaded file
+        filename = secure_filename(file.filename)
+        temp_id = str(uuid.uuid4())
+        temp_path = os.path.join(tempfile.gettempdir(), f"{temp_id}_{filename}")
+        file.save(temp_path)
+        
+        # Convert immediately (optimized)
+        output_path = converter.convert(temp_path, output_format)
+        
+        # Read file for text preview
+        text_content = None
+        if output_format in ['txt', 'html', 'xml', 'csv']:
+            try:
+                with open(output_path, 'r', encoding='utf-8') as f:
+                    text_content = f.read()
+            except:
+                pass
+        
+        # Clean up input file
+        try:
+            os.remove(temp_path)
+        except:
+            pass
+        
+        return jsonify({
+            'success': True,
+            'text_content': text_content,
+            'format': output_format,
+            'download_path': output_path
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/download/<path:filepath>')
+def download_file(filepath):
+    try:
+        if os.path.exists(filepath):
+            return send_file(filepath, as_attachment=True)
+        return jsonify({'error': 'File not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Universal File Converter</title>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="title">Universal File Converter</h1>
+            <nav class="header-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/about" class="nav-link active">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="converter-card">
+                <section class="about-section">
+                    <h2>About Universal File Converter</h2>
+                    <p class="about-description">
+                        Universal File Converter helps you convert between popular file types (documents, spreadsheets, presentations, and images) easily and quickly.
+                    </p>
+
+                    <h3>Conversion Guide</h3>
+                    <div class="table-container">
+                        <table class="conversion-table">
+                            <thead>
+                                <tr>
+                                    <th>From → To</th>
+                                    <th>Supported Formats</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>PDF</td>
+                                    <td>DOCX, TXT, JPG, PNG, HTML, CSV, XLSX</td>
+                                </tr>
+                                <tr>
+                                    <td>DOCX</td>
+                                    <td>PDF, TXT, PPT, HTML, CSV, XLSX</td>
+                                </tr>
+                                <tr>
+                                    <td>PPT</td>
+                                    <td>PDF, DOCX, TXT</td>
+                                </tr>
+                                <tr>
+                                    <td>TXT</td>
+                                    <td>PDF, DOCX, CSV, HTML, PPT</td>
+                                </tr>
+                                <tr>
+                                    <td>CSV</td>
+                                    <td>XLSX, PDF, JSON, XML</td>
+                                </tr>
+                                <tr>
+                                    <td>XLSX</td>
+                                    <td>CSV, PDF, HTML</td>
+                                </tr>
+                                <tr>
+                                    <td>Images (JPG, PNG)</td>
+                                    <td>PDF, DOCX, TXT, HTML</td>
+                                </tr>
+                                <tr>
+                                    <td>JSON</td>
+                                    <td>CSV, XLSX</td>
+                                </tr>
+                                <tr>
+                                    <td>XML</td>
+                                    <td>JSON, CSV, XLSX</td>
+                                </tr>
+                                <tr>
+                                    <td>HTML</td>
+                                    <td>PDF, DOCX</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="conversion-note">
+                        <p>⚠ Not all formats are interconvertible (e.g., PNG → PPT is not supported). Please check supported conversions before uploading.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
