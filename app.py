@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file, render_template
+from flask import Flask, request, jsonify, send_file, render_template, url_for
 import os
 import tempfile
 from werkzeug.utils import secure_filename
@@ -13,6 +13,10 @@ converter = FileConverter()
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/health')
+def health():
+    return "Universal File Converter is running! 🚀"
 
 @app.route('/about')
 def about():
@@ -61,7 +65,7 @@ def convert_file():
             'success': True,
             'text_content': text_content,
             'format': output_format,
-            'download_path': output_path
+            'download_url': url_for('download_file', filepath=output_path, _external=True)
         })
         
     except Exception as e:
