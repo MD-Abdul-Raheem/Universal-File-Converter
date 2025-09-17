@@ -2,13 +2,18 @@ from flask import Flask, request, jsonify, send_file, render_template, url_for
 import os
 import tempfile
 from werkzeug.utils import secure_filename
-from converters import FileConverter
 import uuid
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max
 
-converter = FileConverter()
+# Import converter after Flask app creation to avoid circular imports
+try:
+    from converters import FileConverter
+    converter = FileConverter()
+except ImportError as e:
+    print(f"Warning: Could not import FileConverter: {e}")
+    converter = None
 
 @app.route('/')
 def index():
@@ -25,6 +30,9 @@ def about():
 @app.route('/convert', methods=['POST'])
 def convert_file():
     try:
+        if converter is None:
+            return jsonify({'error': 'File converter not available'}), 500
+            
         if 'file' not in request.files:
             return jsonify({'error': 'No file uploaded'}), 400
         
