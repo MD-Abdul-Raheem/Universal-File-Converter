@@ -19,20 +19,14 @@ try:
 except ImportError:
     pdf2docx = None
 
-try:
-    import docx2pdf
-except ImportError:
-    docx2pdf = None
+# Disable Windows-only imports for Linux deployment
+docx2pdf = None
+win32com = None
 
 try:
     from weasyprint import HTML, CSS
 except ImportError:
     HTML = CSS = None
-
-try:
-    import win32com.client
-except ImportError:
-    win32com = None
 
 try:
     import pdfplumber
@@ -329,65 +323,7 @@ class FileConverter:
         return self._pdf_to_xlsx_fallback(input_path, output_path)
 
     def _docx_to_pdf_professional(self, input_path, output_path):
-        try:
-            if docx2pdf and sys.platform == "win32":
-                # Ensure output directory exists
-                os.makedirs(os.path.dirname(output_path), exist_ok=True)
-                
-                # Remove existing file if present
-                if os.path.exists(output_path):
-                    try:
-                        os.remove(output_path)
-                    except PermissionError:
-                        output_path = output_path.replace('.pdf', '_temp.pdf')
-                
-                docx2pdf.convert(input_path, output_path)
-                return output_path
-        except Exception as e:
-            print(f"docx2pdf failed: {e}")
-        
-        try:
-            if win32com and sys.platform == "win32":
-                import pythoncom
-                pythoncom.CoInitialize()
-                
-                word = None
-                try:
-                    word = win32com.client.Dispatch("Word.Application")
-                    word.Visible = False
-                    word.DisplayAlerts = False
-                    
-                    # Ensure paths are absolute
-                    abs_input = os.path.abspath(input_path)
-                    abs_output = os.path.abspath(output_path)
-                    
-                    # Remove existing output file
-                    if os.path.exists(abs_output):
-                        try:
-                            os.remove(abs_output)
-                        except PermissionError:
-                            abs_output = abs_output.replace('.pdf', '_temp.pdf')
-                    
-                    doc = word.Documents.Open(abs_input, ReadOnly=True)
-                    doc.SaveAs2(abs_output, FileFormat=17)  # Use SaveAs2
-                    doc.Close()
-                    
-                    return abs_output
-                    
-                except Exception as com_error:
-                    print(f"Word COM operation failed: {com_error}")
-                    raise
-                finally:
-                    if word:
-                        try:
-                            word.Quit()
-                        except:
-                            pass
-                    pythoncom.CoUninitialize()
-                    
-        except Exception as e:
-            print(f"Word COM failed: {e}")
-        
+        # Use Linux-safe fallback method only
         return self._docx_to_pdf_fallback(input_path, output_path)
 
     def _html_to_pdf_professional(self, input_path, output_path):
@@ -401,47 +337,7 @@ class FileConverter:
         return self._html_to_pdf_fallback(input_path, output_path)
 
     def _xlsx_to_pdf_professional(self, input_path, output_path):
-        try:
-            if win32com and sys.platform == "win32":
-                import pythoncom
-                pythoncom.CoInitialize()
-                
-                excel = None
-                try:
-                    excel = win32com.client.Dispatch("Excel.Application")
-                    excel.Visible = False
-                    excel.DisplayAlerts = False
-                    
-                    abs_input = os.path.abspath(input_path)
-                    abs_output = os.path.abspath(output_path)
-                    
-                    # Remove existing output file
-                    if os.path.exists(abs_output):
-                        try:
-                            os.remove(abs_output)
-                        except PermissionError:
-                            abs_output = abs_output.replace('.pdf', '_temp.pdf')
-                    
-                    wb = excel.Workbooks.Open(abs_input, ReadOnly=True)
-                    wb.ExportAsFixedFormat(0, abs_output)  # Use ExportAsFixedFormat
-                    wb.Close()
-                    
-                    return abs_output
-                    
-                except Exception as com_error:
-                    print(f"Excel COM operation failed: {com_error}")
-                    raise
-                finally:
-                    if excel:
-                        try:
-                            excel.Quit()
-                        except:
-                            pass
-                    pythoncom.CoUninitialize()
-                    
-        except Exception as e:
-            print(f"Excel COM failed: {e}")
-        
+        # Use Linux-safe fallback method only
         return self._xlsx_to_pdf_fallback(input_path, output_path)
 
     def _image_to_pdf_professional(self, input_path, output_path):
