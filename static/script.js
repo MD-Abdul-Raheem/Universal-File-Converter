@@ -68,6 +68,7 @@ function handleFile(file) {
     fileInfo.style.display = 'flex';
     
     showNotification('📁', 'File uploaded successfully!', 'success');
+    showNotification('⚠️', 'Before conversion read instructions', 'info');
     updateConvertButton();
 }
 
@@ -108,9 +109,6 @@ function formatFileSize(bytes) {
 
 async function convertFile() {
     if (!selectedFile || !selectedFormat) return;
-    
-    // Show instruction notification
-    showNotification('⚠️', 'Before conversion read instructions', 'info');
     
     // Show loading state
     btnText.textContent = 'Converting...';
@@ -207,13 +205,7 @@ function resetButton() {
 
 function downloadFile() {
     if (downloadPath) {
-        const link = document.createElement('a');
-        link.href = downloadPath;
-        link.download = '';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
+        window.location.href = downloadPath;
         showNotification('💾', 'Download started!', 'download');
     }
 }
