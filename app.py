@@ -23,9 +23,9 @@ def index():
 def health():
     return "Universal File Converter is running! 🚀"
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
+@app.route('/instructions')
+def instructions():
+    return render_template('instructions.html')
 
 @app.route('/convert', methods=['POST'])
 def convert_file():
@@ -58,25 +58,43 @@ def convert_file():
         base_name = os.path.splitext(filename)[0]
         download_name = f"{base_name}.{output_format}"
         
-        # Return file directly and clean up after
-        try:
-            return send_file(
-                output_path,
-                as_attachment=True,
-                download_name=download_name
-            )
-        finally:
-            # Clean up both input and output files
+        # Store file for later download
+        output_filename = os.path.basename(output_path)
+        
+        # Read file for text preview
+        text_content = None
+        if output_format in ['txt', 'html', 'xml', 'csv']:
             try:
-                os.remove(temp_path)
-                os.remove(output_path)
+                with open(output_path, 'r', encoding='utf-8') as f:
+                    text_content = f.read()
             except:
                 pass
+        
+        # Clean up input file only
+        try:
+            os.remove(temp_path)
+        except:
+            pass
+        
+        return jsonify({
+            'success': True,
+            'text_content': text_content,
+            'format': output_format,
+            'download_url': f"/download/{output_filename}"
+        })
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Download route removed - files are served directly from /convert
+@app.route('/download/<filename>')
+def download_file(filename):
+    try:
+        filepath = os.path.join(tempfile.gettempdir(), filename)
+        if os.path.exists(filepath):
+            return send_file(filepath, as_attachment=True)
+        return jsonify({'error': f'File not found: {filename}'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

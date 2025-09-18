@@ -14,7 +14,7 @@
             <h1 class="title">Universal File Converter</h1>
             <nav class="header-nav">
                 <a href="/" class="nav-link active" id="homeLink">Home</a>
-                <a href="/about" class="nav-link" id="aboutLink">About</a>
+                <a href="/instructions" class="nav-link" id="instructionsLink">Instructions</a>
             </nav>
         </div>
     </header>
@@ -88,9 +88,12 @@
                     <div class="result-content">
                         <div class="result-icon">✅</div>
                         <div class="result-info">
-                            <h4>File Downloaded Successfully!</h4>
-                            <p id="resultFileName">Check your downloads folder</p>
+                            <h4>Conversion Complete!</h4>
+                            <p id="resultFileName">converted_file.txt</p>
                         </div>
+                        <button class="download-btn" id="downloadBtn" onclick="downloadFile()">
+                            Download
+                        </button>
                     </div>
                     
                     <div class="text-preview" id="textPreview" style="display: none;">

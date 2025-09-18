@@ -109,6 +109,9 @@ function formatFileSize(bytes) {
 async function convertFile() {
     if (!selectedFile || !selectedFormat) return;
     
+    // Show instruction notification
+    showNotification('⚠️', 'Before conversion read instructions', 'info');
+    
     // Show loading state
     btnText.textContent = 'Converting...';
     spinner.style.display = 'block';
@@ -131,23 +134,14 @@ async function convertFile() {
             body: formData
         });
         
-        if (response.ok) {
-            // File is being downloaded directly
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${selectedFile.name.split('.')[0]}.${selectedFormat}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-            
-            showNotification('✅', 'File converted and downloaded!', 'success');
-            hideProgress();
+        const result = await response.json();
+        
+        if (result.success) {
+            downloadPath = result.download_url;
+            showResult(result);
+            showNotification('✅', 'File converted successfully!', 'success');
         } else {
-            const error = await response.json();
-            throw new Error(error.error);
+            throw new Error(result.error);
         }
     } catch (error) {
         alert('Conversion failed: ' + error.message);
@@ -211,7 +205,18 @@ function resetButton() {
     convertBtn.disabled = !selectedFile || !selectedFormat;
 }
 
-// Download function removed - files download automatically after conversion
+function downloadFile() {
+    if (downloadPath) {
+        const link = document.createElement('a');
+        link.href = downloadPath;
+        link.download = '';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showNotification('💾', 'Download started!', 'download');
+    }
+}
 
 function showNotification(icon, message, type) {
     const container = document.getElementById('notificationContainer');
