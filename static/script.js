@@ -131,14 +131,23 @@ async function convertFile() {
             body: formData
         });
         
-        const result = await response.json();
-        
-        if (result.success) {
-            downloadPath = result.download_url;
-            showResult(result);
-            showNotification('✅', 'File converted successfully!', 'success');
+        if (response.ok) {
+            // File is being downloaded directly
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${selectedFile.name.split('.')[0]}.${selectedFormat}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('✅', 'File converted and downloaded!', 'success');
+            hideProgress();
         } else {
-            throw new Error(result.error);
+            const error = await response.json();
+            throw new Error(error.error);
         }
     } catch (error) {
         alert('Conversion failed: ' + error.message);
@@ -202,18 +211,7 @@ function resetButton() {
     convertBtn.disabled = !selectedFile || !selectedFormat;
 }
 
-function downloadFile() {
-    if (downloadPath) {
-        const link = document.createElement('a');
-        link.href = downloadPath;
-        link.download = '';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        showNotification('💾', 'Download started!', 'download');
-    }
-}
+// Download function removed - files download automatically after conversion
 
 function showNotification(icon, message, type) {
     const container = document.getElementById('notificationContainer');

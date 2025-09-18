@@ -51,42 +51,32 @@ def convert_file():
         temp_path = os.path.join(tempfile.gettempdir(), f"{temp_id}_{filename}")
         file.save(temp_path)
         
-        # Convert immediately (optimized)
+        # Convert immediately
         output_path = converter.convert(temp_path, output_format)
         
-        # Read file for text preview
-        text_content = None
-        if output_format in ['txt', 'html', 'xml', 'csv']:
+        # Generate download filename
+        base_name = os.path.splitext(filename)[0]
+        download_name = f"{base_name}.{output_format}"
+        
+        # Return file directly and clean up after
+        try:
+            return send_file(
+                output_path,
+                as_attachment=True,
+                download_name=download_name
+            )
+        finally:
+            # Clean up both input and output files
             try:
-                with open(output_path, 'r', encoding='utf-8') as f:
-                    text_content = f.read()
+                os.remove(temp_path)
+                os.remove(output_path)
             except:
                 pass
-        
-        # Don't clean up files immediately - keep them for download
-        # Files will be cleaned up by system temp cleanup
-        
-        output_filename = os.path.basename(output_path)
-        
-        return jsonify({
-            'success': True,
-            'text_content': text_content,
-            'format': output_format,
-            'download_url': f"/download/{output_filename}"
-        })
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/download/<filename>')
-def download_file(filename):
-    try:
-        filepath = os.path.join(tempfile.gettempdir(), filename)
-        if os.path.exists(filepath):
-            return send_file(filepath, as_attachment=True)
-        return jsonify({'error': f'File not found: {filename}'}), 404
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+# Download route removed - files are served directly from /convert
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
