@@ -134,7 +134,7 @@ async function convertFile() {
         const result = await response.json();
         
         if (result.success) {
-            downloadPath = result.download_path;
+            downloadPath = result.download_url;
             showResult(result);
             showNotification('✅', 'File converted successfully!', 'success');
         } else {
@@ -205,7 +205,7 @@ function resetButton() {
 function downloadFile() {
     if (downloadPath) {
         const link = document.createElement('a');
-        link.href = `/download/${encodeURIComponent(downloadPath)}`;
+        link.href = downloadPath;
         link.download = '';
         document.body.appendChild(link);
         link.click();

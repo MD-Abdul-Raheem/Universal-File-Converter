@@ -73,15 +73,16 @@ def convert_file():
             'success': True,
             'text_content': text_content,
             'format': output_format,
-            'download_url': url_for('download_file', filepath=output_path, _external=True)
+            'download_url': url_for('download_file', filename=os.path.basename(output_path), _external=True)
         })
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/download/<path:filepath>')
-def download_file(filepath):
+@app.route('/download/<filename>')
+def download_file(filename):
     try:
+        filepath = os.path.join(tempfile.gettempdir(), filename)
         if os.path.exists(filepath):
             return send_file(filepath, as_attachment=True)
         return jsonify({'error': 'File not found'}), 404
