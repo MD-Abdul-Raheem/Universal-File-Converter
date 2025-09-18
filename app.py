@@ -63,17 +63,16 @@ def convert_file():
             except:
                 pass
         
-        # Clean up input file
-        try:
-            os.remove(temp_path)
-        except:
-            pass
+        # Don't clean up files immediately - keep them for download
+        # Files will be cleaned up by system temp cleanup
+        
+        output_filename = os.path.basename(output_path)
         
         return jsonify({
             'success': True,
             'text_content': text_content,
             'format': output_format,
-            'download_url': url_for('download_file', filename=os.path.basename(output_path), _external=True)
+            'download_url': f"/download/{output_filename}"
         })
         
     except Exception as e:
@@ -85,7 +84,7 @@ def download_file(filename):
         filepath = os.path.join(tempfile.gettempdir(), filename)
         if os.path.exists(filepath):
             return send_file(filepath, as_attachment=True)
-        return jsonify({'error': 'File not found'}), 404
+        return jsonify({'error': f'File not found: {filename}'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
